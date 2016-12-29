@@ -4,8 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "test": "mocha --require babel-polyfill --compilers js:babel-register",
+    "start": "node dist/app.js"
   },
   "repository": {
     "type": "git",
@@ -17,46 +17,16 @@
     "url": "https://github.com/brianboyko/MKS21-thesis/issues"
   },
   "homepage": "https://github.com/brianboyko/MKS21-thesis#readme",
-  "dependencies": {
-    "bcrypt-nodejs": "0.0.3",
-    "bluebird": "^2.10.2",
-    "body-parser": "^1.14.1",
-    "browserify": "~11.2.0",
-    "browserify-middleware": "^7.0.0",
-    "connect-flash": "^0.1.1",
-    "connect-mongo": "^0.8.2",
-    "cookie-parser": "~1.4.0",
-    "csvtojson": "^0.4.3",
-    "ejs": "^2.3.4",
-    "express": "^4.13.3",
-    "express-session": "~1.11.3",
-    "fs": "0.0.2",
-    "http": "0.0.0",
-    "jquery": "^2.1.4",
-    "jwt-simple": "^0.3.1",
-    "materialize-css": "^0.97.1",
-    "mongodb": "~2.0.45",
-    "mongoose": "^4.1.9",
-    "morgan": "^1.6.1",
-    "passport": "^0.3.0",
-    "passport-facebook": "^2.0.0",
-    "passport-local": "^1.0.0",
-    "q": "^1.4.1",
-    "react": "^0.14.0",
-    "react-chartjs": "^0.6.0",
-    "react-dom": "^0.14.0",
-    "reactify": "^1.1.1",
-    "request": "^2.64.0",
-    "socket.io": "^1.3.7",
-    "underscore": "^1.8.3"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "chai": "^3.3.0",
-    "chai-as-promised": "^5.1.0",
-    "mocha": "^2.3.3",
-    "should": "^7.1.0",
-    "sinon": "^1.17.1",
-    "socket.io-client": "^1.3.7",
-    "supertest": "^1.1.0"
+    "babel-core": "^6.21.0",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-register": "^6.18.0",
+    "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
+    "express": "^4.14.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "mocha": "^3.2.0"
   }
 }
