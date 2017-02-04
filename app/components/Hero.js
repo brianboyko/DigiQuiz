@@ -5,7 +5,6 @@ import Graph from './Graph';
 import barchart from '../charts/barchart';
 import linechart from '../charts/linechart';
 import scatterplot from '../charts/scatterplot';
-import mapgeo from '../charts/mapgeo';
 
 const Hero = (props) => (
   <div>
@@ -13,7 +12,6 @@ const Hero = (props) => (
     <Graph definition={barchart}/>
     <Graph definition={linechart}/>
     <Graph definition={scatterplot}/>
-    <Graph definition={mapgeo}/>
   </div>
 )
 
