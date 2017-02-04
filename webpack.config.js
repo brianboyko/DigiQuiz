@@ -1,36 +1,46 @@
-const webpack = require('webpack');
+'use strict';
+
+var path = require('path');
+var webpack = require('webpack');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry: './src/frontend/app.js',
+  devtool: 'eval-source-map',
+  entry: [
+    'webpack-hot-middleware/client?reload=true',
+    path.join(__dirname, 'app/main.js')
+  ],
   output: {
-    path: './bin/app',
-    filename: 'app.bundle.js',
+    path: path.join(__dirname, '/dist/'),
+    filename: '[name].js',
     publicPath: '/'
   },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: 'app/index.tpl.html',
+      inject: 'body',
+      filename: 'index.html'
+    }),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('development')
+    })
+  ],
   module: {
-    loaders: [{
-      test: /\.(js|jsx)$/,
+    rules: [{
+      test: /\.jsx?$/,
       exclude: /node_modules/,
-      loader: 'babel-loader'
+      loader: 'babel-loader',
+      query: {
+        "presets": ["env", "latest", "react"]
+      }
     }, {
-      test: /\.json$/,
+      test: /\.json?$/,
       loader: 'json-loader'
     }, {
-      test: /\.(jpe?g|png|gif|svg)$/i,
-      loaders: [
-        'file?hash=sha512&digest=hex&name=[hash].[ext]',
-        'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
-      ]
+      test: /\.css$/,
+      loader: 'style-loader!css-loader?modules&localIdentName=[name]---[local]---[hash:base64:5]'
     }]
-  },
-  node: {
-    console: true,
-    fs: 'empty',
-    net: 'empty',
-    tls: 'empty'
-  },
-  plugins: [ new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
-    })
-  ]
+  }
 };
