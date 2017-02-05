@@ -1,25 +1,24 @@
 'use strict';
-// to do, curry this ito multiple models. 
 
-export default (knex) => {
+// not strictly needed but allows us to copy/paste this code to create other models.
+const TABLENAME = 'USERS';
 
-  /**
-   * creates an entry in the database.
-   * @method create
-   * @param  {string} login      login name
-   * @param  {string} password   password (hashed)
-   * @param  {string} email      email
-   * @param  {string} first_name first name
-   * @param  {string} last_name  last name
-   * @return {object}            Object containing the UID of the user
-   */
+const addByMethods = (fn, bys) => {
+  bys.forEach((by) => {
+    fn["by_" + by] = fn(by);
+  });
+};
+
+export default (knex) => { // takes already configured/connected knex as dependency.
+
+  // adds a record to the db.
   const create = ({
       login,
       password,
       email,
       first_name,
       last_name
-    }) => knex('USERS')
+    }) => knex(TABLENAME)
     .insert({
       login,
       password,
@@ -29,34 +28,40 @@ export default (knex) => {
     })
     .returning('uid');
 
-  let read = (by) => (lookup) => knex('USERS').where({ [by] : lookup }).select();
-  ['uid', 'login', 'email'].forEach((by) => {
-    read["by_" + by] = read(by);
-  });
-  read.by_name = (first_name, last_name) => knex('USERS').where({ first_name, last_name }).select();
+  // creates a curry to read by a particular value.
+  let read = (by) => (lookup) => knex(TABLENAME)
+    .where({ [by]: lookup })
+    .select();
 
 
-  let update = (id, updateData) => knex('USERS')
+  // special case where curry function cannot be used. Looks up user by first and last nam.
+  read.by_name = (first_name, last_name) => knex(TABLENAME)
     .where({
-      uid: id
+      first_name,
+      last_name
     })
+    .select();
+
+  let update = (by) => (lookup, updateData) => knex(TABLENAME)
+    .where({ [by]: lookup })
     .update(updateData);
 
-  let makeDel = (lookups) => lookups.reduce((pv, cv) => Object.assign(pv, {
-    [by_ + cv]: (value) => knex('USERS')
-      .where({
-        [cv]: value
-      })
-      .del()
-  }), {});
 
-  let del = makeDel(['uid', 'login', 'email']);
-  del.by_name = (first_name, last_name) => knex('USERS')
+  let del = (by) => (lookup) => knex(TABLENAME)
+    .where({ [by]: lookup })
+    .del();
+
+
+  del.by_name = (first_name, last_name) => knex(TABLENAME)
     .where({
       first_name,
       last_name
     })
     .del();
+
+  addByMethods(read, ['uid', 'login', 'email']);
+  addByMethods(update, ['uid']);
+  addByMethods(del, ['uid', 'login', 'email']);
 
   let output = {
     create,
@@ -70,7 +75,7 @@ export default (knex) => {
     .forEach((k) => {
       if (!!o[k] && typeof(o[k] == 'object')) {
         console.log(k);
-        info(o[i]);
+        info(o[k]);
       }
       else {
         console.log(k);
