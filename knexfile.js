@@ -15,6 +15,10 @@ module.exports = {
   production: {
     client: 'pg',
     connection: databaseURL,
+    migrations: {
+      directory: "./server/migrations",
+      tableName: "version"
+    },
   },
   migrations: {
     directory: "./server/migrations",

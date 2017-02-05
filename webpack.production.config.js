@@ -16,7 +16,7 @@ module.exports = {
     publicPath: '/'
   },
   plugins: [
-    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.optimize.OccurrenceOrderPlugin(),
     new HtmlWebpackPlugin({
       template: 'app/index.tpl.html',
       inject: 'body',
@@ -50,10 +50,10 @@ module.exports = {
       loader: 'json-loader'
     }, {
       test: /\.css$/,
-      loader: ExtractTextPlugin.extract('style-loader', 'css-loader?modules&localIdentName=[name]---[local]---[hash:base64:5]!postcss')
+      loader: ExtractTextPlugin.extract({
+        fallback: 'style-loader',
+        use: 'css-loader?modules&localIdentName=[name]---[local]---[hash:base64:5]!postcss'
+      }),
     }]
-  },
-  postcss: [
-    require('autoprefixer')
-  ]
+  }
 };
