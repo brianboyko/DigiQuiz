@@ -63,27 +63,14 @@ export default (knex) => { // takes already configured/connected knex as depende
   addByMethods(update, ['uid']);
   addByMethods(del, ['uid', 'login', 'email']);
 
-  let output = {
+  const count = () => knex(TABLENAME).count('*'); 
+
+  return {
     create,
     read,
     update,
-    del
+    del,
+    count,
   };
 
-  let info = (o) =>
-    Object.keys(o)
-    .forEach((k) => {
-      if (!!o[k] && typeof(o[k] == 'object')) {
-        console.log(k);
-        info(o[k]);
-      }
-      else {
-        console.log(k);
-      }
-    });
-
-
-  return Object.assign(output, {
-    getInfo: () => info(output)
-  });
 };

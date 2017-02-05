@@ -1,12 +1,13 @@
 'use strict';
 // knexfile.js must go in / (root);
-
-var databaseURL = process.env.DATABASE_URL || 'postgres://digiquiz:digiquiz@127.0.0.1:5432/digiquiz';
+var makeUrl = function(coll) {
+  return process.env.DATABASE_URL || ('postgres://digiquiz:digiquiz@127.0.0.1:5432/digiquiz' + coll);
+};
 
 module.exports = {
   development: {
     client: 'pg',
-    connection: databaseURL,
+    connection: makeUrl('Dev'),
     migrations: {
       directory: "./server/migrations",
       tableName: "version"
@@ -14,7 +15,15 @@ module.exports = {
   },
   production: {
     client: 'pg',
-    connection: databaseURL,
+    connection: makeUrl('Prod'),
+    migrations: {
+      directory: "./server/migrations",
+      tableName: "version"
+    },
+  },
+  test: {
+    client: 'pg',
+    connection: makeUrl('Test'),
     migrations: {
       directory: "./server/migrations",
       tableName: "version"

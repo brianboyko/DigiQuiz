@@ -5,13 +5,17 @@ chai.use(chaiAP);
 const expect = chai.expect;
 
 import knex from '../../../../server/db/config';
-console.log("knex", knex);
 import modelUsers from '../../../../server/db/models/Users';
 const Users = modelUsers(knex);
-console.log(Users);
-console.log(Users.getInfo());
 
 describe('Model: Users', function(){
+
+  describe('Users.count()', function(){
+    it('should count the users', function(done) {
+      expect(Users.count().then((c) => !isNaN(c[0].count))).to.eventually.equal(true).notify(done);
+    });
+  });
+  
   describe('Users.create()', function(){
     it('should create a user', function(done) {
       this.timeout(10000);
@@ -22,11 +26,7 @@ describe('Model: Users', function(){
         first_name: "Fake",
         last_name: "Faker"
       };
-      Users.create(fakeUser).then((idObj) => {
-        console.log("We created a user!\n", idObj);
-        expect(idObj[0]).to.be.an.integer
-        done();
-      });
+    expect(Users.create(fakeUser).then((idObj) => idObj[0])).to.eventually.be.a('Number').notify(done);
     });
   });
 });

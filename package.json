@@ -4,9 +4,10 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Note: Make sure to run npm run start in other window before testing\" && mocha --recursive --require babel-polyfill --compilers js:babel-register",
+    "test": "echo \"Note: Make sure to run npm run test:start in other window before testing\" && cross-env NODE_ENV=test mocha --recursive --require babel-polyfill --compilers js:babel-register",
     "build": "./node_modules/.bin/babel server -d liveserv",
     "start": "npm run build && node liveserv/server",
+    "test:start": "npm run build && cross-env NODE_ENV=test node liveserv/server",
     "production:start": "npm run production:build && node liveserv/server",
     "production:build": "rimraf dist && cross-env NODE_ENV=production ./node_modules/.bin/webpack --config ./webpack.production.config.js --progress --profile --colors"
   },
