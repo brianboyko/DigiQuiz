@@ -180,5 +180,33 @@ describe('Model: Users', function() {
         .to.eventually.equal(1)
         .notify(done);
     });
+    it('deletes .by_login', function(done) {
+      let before;
+      expect(Users.count()
+        .then((counts) => parseInt(counts[0].count))
+        .then((numCount) => {
+          before = numCount;
+          return Users.del.by_login(fakes[1].login);
+        })
+        .then(() => Users.count())
+        .then((counts) => parseInt(counts[0].count))
+        .then((numCount) => before - numCount))
+        .to.eventually.equal(1)
+        .notify(done);
+    });
+    it('deletes .by_email', function(done) {
+      let before;
+      expect(Users.count()
+        .then((counts) => parseInt(counts[0].count))
+        .then((numCount) => {
+          before = numCount;
+          return Users.del.by_email(fakes[0].email);
+        })
+        .then(() => Users.count())
+        .then((counts) => parseInt(counts[0].count))
+        .then((numCount) => before - numCount))
+        .to.eventually.equal(1)
+        .notify(done);
+    });
   });
 });
