@@ -41,6 +41,8 @@ export default (knex) => { // takes already configured/connected knex as depende
       last_name
     })
     .select();
+  // another special case.
+  read.all = () => knex(TABLENAME).select();
 
   let update = (by) => (lookup, updateData) => knex(TABLENAME)
     .where({ [by]: lookup })
@@ -63,7 +65,7 @@ export default (knex) => { // takes already configured/connected knex as depende
   addByMethods(update, ['uid']);
   addByMethods(del, ['uid', 'login', 'email']);
 
-  const count = () => knex(TABLENAME).count('*'); 
+  const count = () => knex(TABLENAME).count('*');
 
   return {
     create,
