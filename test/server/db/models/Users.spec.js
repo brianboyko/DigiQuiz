@@ -200,7 +200,7 @@ describe('Model: Users', function() {
         .then((counts) => parseInt(counts[0].count))
         .then((numCount) => {
           before = numCount;
-          return Users.del.by_email(fakes[0].email);
+          return Users.del.by_email(fakes[4].email);
         })
         .then(() => Users.count())
         .then((counts) => parseInt(counts[0].count))
