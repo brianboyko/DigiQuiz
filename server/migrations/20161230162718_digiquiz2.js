@@ -2,7 +2,7 @@ exports.up = function(knex, Promise) {
   return Promise.all([
     knex.schema.createTable('USERS', function(table) {
       table.increments('uid')
-        .primary();
+        .primary()
       table.string('login');
       table.string('password');
       table.string('email');
@@ -16,12 +16,15 @@ exports.up = function(knex, Promise) {
         .primary();
       table.integer('created_by')
         .references('uid')
-        .inTable('USERS');
+        .inTable('USERS')
+        .onDelete('CASCADE')
+        .onUpdate('CASCADE');
       table.boolean('is_public');
       table.string('type');
       table.string('category');
       table.string('prompt');
       table.string('choices'); // likely JSON;
+      table.string('answer');
       table.timestamps();
     }),
 

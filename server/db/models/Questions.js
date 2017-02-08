@@ -19,6 +19,7 @@ export default (knex) => { // takes already configured/connected knex as depende
       category,
       prompt,
       choices,
+      answer,
     }) => knex(TABLENAME)
     .insert({
       created_by,
@@ -27,6 +28,7 @@ export default (knex) => { // takes already configured/connected knex as depende
       category,
       prompt,
       choices,
+      answer,
     })
     .returning('id');
 
