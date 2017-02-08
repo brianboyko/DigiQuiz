@@ -33,11 +33,13 @@ exports.up = function(knex, Promise) {
         .primary();
       table.integer('created_by')
         .references('uid')
-        .inTable('USERS');
+        .inTable('USERS')
+        .onDelete('CASCADE')
+        .onUpdate('CASCADE');
       table.boolean('is_public');
-      table.timestamps();
       table.string('title');
       table.string('subject');
+      table.timestamps();
     }),
 
     knex.schema.createTable('GAMES', function(table) {

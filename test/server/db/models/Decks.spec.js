@@ -6,37 +6,14 @@ chai.use(chaiAP);
 const expect = chai.expect;
 
 import knex from '../../../../server/db/config';
-import modelQuestions from '../../../../server/db/models/Questions';
+import modelDecks from '../../../../server/db/models/Decks';
 import modelUsers from '../../../../server/db/models/Users';
 const Users = modelUsers(knex);
-const Questions = modelQuestions(knex);
+const Decks = modelDecks(knex);
 
-const fakeUser = {
-  login: "questionMaker",
-  password: "somehashedpass",
-  email: 'something@fake.com',
-  first_name: "Fake",
-  last_name: "Faker"
-};
+import { generateFakeUsers } from './util';
 
-const fakeQuestion = {
-  is_public: true,
-  type: 'multiple_choice',
-  category: 'sports',
-  prompt: 'Who run bartertown?',
-  choices: JSON.stringify({
-    A: 'Master Blaster',
-    B: 'Tina Turner',
-    C: 'Mad Max',
-    D: 'Really Mad Max'
-  }),
-  answer: "A",
-};
-
-import {generateFakeUsers} from './util';
-
-
-const generateFakeQuestions = (num) => {
+const generateFakeDecks = (num) => {
   let fakes = [];
   let fakeUsers = generateFakeUsers(num);
 
@@ -46,20 +23,9 @@ const generateFakeQuestions = (num) => {
         uids.forEach((uid, i) => {
           fakes.push({
             created_by: uid[0],
-            is_public: (Math.floor(Math.random() * 2)) % 2 === 0 ? true : false,
-            type: (Math.floor(Math.random() * 2)) % 2 === 0 ? "multiple choice" : "fill in the blank",
-            category: "q" + i,
-            prompt: "P" + Math.random()
-              .toString(),
-            choices: JSON.stringify({
-              A: "A" + Math.random()
-                .toString(),
-              B: "B" + Math.random()
-                .toString(),
-              C: "C" + Math.random()
-                .toString()
-            }),
-            answer: "B",
+            is_public: true,
+            title: "t" + i,
+            subject: "s" + i,
           });
         });
         resolve(fakes);
@@ -69,9 +35,9 @@ const generateFakeQuestions = (num) => {
 
 const clearDB = (done) => {
   Promise.all([
-      Questions.read.all()
+      Decks.read.all()
       .then((records) => records.map((r) => r.id))
-      .then((ids) => Promise.all(ids.map((id) => Questions.del.by_id(id)))),
+      .then((ids) => Promise.all(ids.map((id) => Decks.del.by_id(id)))),
       Users.read.all()
       .then((records) => records.map((r) => r.uid))
       .then((uids) => Promise.all(uids.map((uid) => Users.del.by_uid(uid))))
@@ -81,53 +47,52 @@ const clearDB = (done) => {
 
 let store = {};
 
-describe('Model: Questions', function() {
+describe('Model: Decks', function() {
   before(function(done) {
     // clear all questions and users from the test DB.
     clearDB(done);
   });
 
   it('should start from a clear test database', function(done) {
-    expect(Questions.count()
-        .then((c) => parseInt(c[0].count)))
+    expect(Decks.count()
+      .then((c) => parseInt(c[0].count)))
       .to.eventually.equal(0)
       .notify(done);
   });
 
-  describe('Questions.count()', function() {
+  describe('Decks.count()', function() {
     it('should count the questions', function(done) {
-      expect(Questions.count()
+      expect(Decks.count()
           .then((c) => !isNaN(c[0].count)))
         .to.eventually.equal(true)
         .notify(done);
     });
   });
 
-  describe('Questions.create()', function() {
-    it('should create a Question', function(done) {
+  describe('Decks.create()', function() {
+    let singleDeck;
+    it('should create a Deck', function(done) {
       this.timeout(10000);
-      expect(Users.create(fakeUser)
-          .then((uid) => {
-            store.uid = uid[0];
-            return Questions.create(Object.assign({
-              created_by: uid[0]
-            }, fakeQuestion));
-          })
-          .then((id) => id[0]))
+      expect(generateFakeDecks(1)
+        .then((decks) => {
+          singleDeck = decks[0];
+          return Decks.create(decks[0]);
+        })
+        .then((id) => id[0]))
         .to.eventually.be.a('Number')
         .notify(done);
     });
     it('should confirm we have one record', function(done) {
-      expect(Questions.count()
+      expect(Decks.count()
           .then((c) => parseInt(c[0].count)))
         .to.eventually.equal(1)
         .notify(done);
     });
     it('should be the record we just entered', function(done) {
-      expect(Questions.read.by_created_by(store.uid)
+      expect(Decks.read.by_created_by(singleDeck.created_by)
           .then((r) => r[0])
-          .then((r) => _.pick(r, ["is_public", "type", "category", "prompt", "choices", 'answer'])))
-        .to.eventually.eql(fakeQuestion)
+          .then((r) => _.pick(r, 'created_by', 'is_public', 'title', 'subject')))
+        .to.eventually.eql(singleDeck)
         .notify(done);
     });
     after(function(done) {
@@ -136,34 +101,34 @@ describe('Model: Questions', function() {
 
   });
 
-  describe('Questions.read', function() {
+  describe('Decks.read', function() {
     let fakes;
     before(function(done) {
       clearDB(() => {
-        generateFakeQuestions(5)
-          .then((fakeQs) => {
-            fakes = fakeQs;
-            return Promise.all(fakes.map((fake) => Questions.create(fake)));
+        generateFakeDecks(5)
+          .then((fakeDs) => {
+            fakes = fakeDs;
+            return Promise.all(fakes.map((fake) => Decks.create(fake)));
           })
           .then(() => done());
       });
     });
     it('reads with a manually inserted by', function(done) {
-      expect(Questions.read('prompt')(fakes[0].prompt)
-          .then((r) => _.pick(r[0], ['created_by', "is_public", "type", "category", "prompt", "choices", 'answer'])))
+      expect(Decks.read('title')(fakes[0].title)
+          .then((r) => _.pick(r[0], ['created_by', 'is_public', 'title', 'subject'])))
         .to.eventually.eql(fakes[0])
         .notify(done);
     });
     it('reads .by_created_by', function(done) {
-      expect(Promise.all(fakes.map((fake) => Questions.read.by_created_by(fake.created_by)))
+      expect(Promise.all(fakes.map((fake) => Decks.read.by_created_by(fake.created_by)))
           .then((recs) => recs.map((rec) => rec[0]))
           .then((recs) => recs.map((r) =>
-            _.pick(r, ['created_by', "is_public", "type", "category", "prompt", "choices", 'answer']))))
+            _.pick(r, ['created_by', 'is_public', 'title', 'subject']))))
         .to.eventually.eql(fakes)
         .notify(done);
     });
     it('reads .all', function(done) {
-      expect(Questions.read.all())
+      expect(Decks.read.all())
         .to.eventually.be.an('Array')
         .notify(done);
     });
@@ -172,42 +137,42 @@ describe('Model: Questions', function() {
     });
   });
 
-  describe('Questions.update', function() {
+  describe('Decks.update', function() {
     let fakes;
     before(function(done) {
       clearDB(() => {
-        generateFakeQuestions(5)
-          .then((fakeQs) => {
-            fakes = fakeQs;
-            return Promise.all(fakes.map((fake) => Questions.create(fake)));
+        generateFakeDecks(5)
+          .then((fakeDs) => {
+            fakes = fakeDs;
+            return Promise.all(fakes.map((fake) => Decks.create(fake)));
           })
           .then(() => done());
       });
     });
     it('updates by arbitrary convention', function(done) {
-      expect(Questions.update('category')("q0", {
-            "answer": "D"
+      expect(Decks.update('title')("t0", {
+            "subject": "cornflakes"
           })
-          .then(() => Questions.read('category')('q0'))
+          .then(() => Decks.read('title')('t0'))
           .then((records) => records[0])
-          .then((record) => record.answer))
-        .to.eventually.equal("D")
+          .then((record) => record.subject))
+        .to.eventually.equal("cornflakes")
         .notify(done);
     });
     it('updates .by_id', function(done) {
       let thisID;
-      expect(Questions.read('category')('q2')
+      expect(Decks.read('subject')('s1')
           .then((records) => records[0].id)
           .then((id) => {
             thisID = id;
-            return Questions.update.by_id(id, {
-              answer: "E"
+            return Decks.update.by_id(id, {
+              title: "marshmallows"
             });
           })
-          .then(() => Questions.read.by_id(thisID))
+          .then(() => Decks.read.by_id(thisID))
           .then((records) => records[0])
-          .then((record) => record.answer))
-        .to.eventually.equal("E")
+          .then((record) => record.title))
+        .to.eventually.equal("marshmallows")
         .notify(done);
     });
     after(function(done) {
@@ -215,27 +180,27 @@ describe('Model: Questions', function() {
     });
   });
 
-  describe('Questions.del', function() {
+  describe('Decks.del', function() {
     let fakes;
     before(function(done) {
       clearDB(() => {
-        generateFakeQuestions(5)
-          .then((fakeQs) => {
-            fakes = fakeQs;
-            return Promise.all(fakes.map((fake) => Questions.create(fake)));
+        generateFakeDecks(5)
+          .then((fakeDs) => {
+            fakes = fakeDs;
+            return Promise.all(fakes.map((fake) => Decks.create(fake)));
           })
           .then(() => done());
       });
     });
     it('deletes by arbitrary convention', function(done) {
       let before;
-      expect(Questions.count()
+      expect(Decks.count()
           .then((counts) => parseInt(counts[0].count))
           .then((numCount) => {
             before = numCount;
-            return Questions.del('category')(fakes[0].category);
+            return Decks.del('title')(fakes[3].title);
           })
-          .then(() => Questions.count())
+          .then(() => Decks.count())
           .then((counts) => parseInt(counts[0].count))
           .then((numCount) => before - numCount))
         .to.eventually.equal(1)
@@ -243,15 +208,15 @@ describe('Model: Questions', function() {
     });
     it('deletes .by_id', function(done) {
       let before;
-      expect(Questions.count()
+      expect(Decks.count()
           .then((counts) => parseInt(counts[0].count))
           .then((numCount) => {
             before = numCount;
-            return Questions.read.all();
+            return Decks.read.all();
           })
           .then((records) => records[0].id)
-          .then((id) => Questions.del.by_id(id))
-          .then(() => Questions.count())
+          .then((id) => Decks.del.by_id(id))
+          .then(() => Decks.count())
           .then((counts) => parseInt(counts[0].count))
           .then((numCount) => before - numCount))
         .to.eventually.equal(1)

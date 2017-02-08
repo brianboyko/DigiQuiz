@@ -3,11 +3,7 @@
 // not strictly needed but allows us to copy/paste this code to create other models.
 const TABLENAME = 'USERS';
 
-const addByMethods = (fn, bys) => {
-  bys.forEach((by) => {
-    fn["by_" + by] = fn(by);
-  });
-};
+import { addByMethods } from '../util';
 
 export default (knex) => { // takes already configured/connected knex as dependency.
 

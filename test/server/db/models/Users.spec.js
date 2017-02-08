@@ -17,19 +17,7 @@ const fakeUser = {
   last_name: "Faker"
 };
 
-const generateFake = (num) => {
-  let fakes = [];
-  for(let i = 0; i < num; i++){
-    fakes.push({
-      login: "L" + Math.random().toString(),
-      password: "P" + Math.random().toString(),
-      email: "E" + Math.random().toString(),
-      first_name: "F" + Math.random().toString(),
-      last_name: "N" + Math.random().toString(),
-    });
-  }
-  return fakes;
-};
+import {generateFakeUsers} from './util';
 
 describe('Model: Users', function() {
   before(function(done) {
@@ -83,7 +71,7 @@ describe('Model: Users', function() {
   describe('Users.read', function(){
     let fakes;
     before(function(done){
-      fakes = generateFake(5);
+      fakes = generateFakeUsers(5);
       Promise.all(fakes.map((fake) => Users.create(fake))).then(() => done());
     });
     it('reads with a manually inserted by', function(done){
@@ -115,7 +103,7 @@ describe('Model: Users', function() {
         .then((records) => records.map((r) => r.uid))
         .then((uids) => Promise.all(uids.map((uid) => Users.del.by_uid(uid))))
         .then(() => {
-          fakes = generateFake(5);
+          fakes = generateFakeUsers(5);
           return Promise.all(fakes.map((fake) => Users.create(fake)));
         })
         .then(() => done());
@@ -146,7 +134,7 @@ describe('Model: Users', function() {
         .then((records) => records.map((r) => r.uid))
         .then((uids) => Promise.all(uids.map((uid) => Users.del.by_uid(uid))))
         .then(() => {
-          fakes = generateFake(5);
+          fakes = generateFakeUsers(5);
           return Promise.all(fakes.map((fake) => Users.create(fake)));
         })
         .then(() => done());
