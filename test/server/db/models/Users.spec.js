@@ -17,7 +17,7 @@ const fakeUser = {
   last_name: "Faker"
 };
 
-import {generateFakeUsers} from './util';
+import { generateFakeUsers } from './util';
 
 describe('Model: Users', function() {
   before(function(done) {

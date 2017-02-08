@@ -2,7 +2,7 @@ exports.up = function(knex, Promise) {
   return Promise.all([
     knex.schema.createTable('USERS', function(table) {
       table.increments('uid')
-        .primary()
+        .primary();
       table.string('login');
       table.string('password');
       table.string('email');
@@ -17,7 +17,7 @@ exports.up = function(knex, Promise) {
       table.integer('created_by')
         .references('uid')
         .inTable('USERS')
-        .onDelete('CASCADE')
+        .onDelete('SET NULL')
         .onUpdate('CASCADE');
       table.boolean('is_public');
       table.string('type');
@@ -34,7 +34,7 @@ exports.up = function(knex, Promise) {
       table.integer('created_by')
         .references('uid')
         .inTable('USERS')
-        .onDelete('CASCADE')
+        .onDelete('SET NULL')
         .onUpdate('CASCADE');
       table.boolean('is_public');
       table.string('title');
@@ -50,10 +50,14 @@ exports.up = function(knex, Promise) {
       table.dateTime('finished');
       table.integer('deck')
         .references('id')
-        .inTable('DECKS');
+        .inTable('DECKS')
+        .onDelete('CASCADE')
+        .onUpdate('CASCADE');
       table.integer('created_by')
         .references('uid')
-        .inTable('USERS');
+        .inTable('USERS')
+        .onDelete('SET NULL')
+        .onUpdate('CASCADE');
     }),
 
     knex.schema.createTable('RESPONSES', function(table) {
@@ -61,13 +65,19 @@ exports.up = function(knex, Promise) {
         .primary();
       table.integer('game')
         .references('id')
-        .inTable('GAMES');
+        .inTable('GAMES')
+        .onDelete('CASCADE')
+        .onUpdate('CASCADE');
       table.integer('question')
         .references('id')
-        .inTable('QUESTIONS');
+        .inTable('QUESTIONS')
+        .onDelete('CASCADE')
+        .onDelete('CASCADE');
       table.integer('player')
         .references('uid')
-        .inTable('USERS');
+        .inTable('USERS')
+        .onDelete('SET NULL')
+        .onUpdate('CASCADE');
       table.string('answer_provided');
       table.boolean('is_correct');
       table.integer('point_value');
@@ -87,40 +97,54 @@ exports.up = function(knex, Promise) {
         .primary();
       table.integer('question')
         .references('id')
-        .inTable('QUESTIONS');
+        .inTable('QUESTIONS')
+        .onDelete('CASCADE');
       table.integer('keyword')
         .references('id')
-        .inTable('KEYWORDS');
+        .inTable('KEYWORDS')
+        .onDelete('CASCADE');
     }),
     knex.schema.createTable('USERS_DECKS', function(table) {
       table.increments('id')
         .primary();
       table.integer('user')
         .references('uid')
-        .inTable('USERS');
+        .inTable('USERS')
+        .onDelete('CASCADE')
+        .onUpdate('CASCADE');
       table.integer('deck')
         .references('id')
-        .inTable('DECKS');
+        .inTable('DECKS')
+        .onDelete('CASCADE')
+        .onUpdate('CASCADE');
     }),
     knex.schema.createTable('DECKS_QUESTIONS', function(table) {
       table.increments('id')
         .primary();
       table.integer('question')
         .references('id')
-        .inTable('QUESTIONS');
+        .inTable('QUESTIONS')
+        .onDelete('CASCADE')
+        .onUpdate('CASCADE');
       table.integer('deck')
         .references('id')
-        .inTable('DECKS');
+        .inTable('DECKS')
+        .onDelete('CASCADE')
+        .onUpdate('CASCADE');
     }),
     knex.schema.createTable('GAMES_PLAYERS', function(table) {
       table.increments('id')
         .primary();
       table.integer('player')
         .references('uid')
-        .inTable('USERS');
+        .inTable('USERS')
+        .onDelete('CASCADE')
+        .onUpdate('CASCADE');
       table.integer('game')
         .references('id')
-        .inTable('GAMES');
+        .inTable('GAMES')
+        .onDelete('CASCADE')
+        .onUpdate('CASCADE');
     })
   ]);
 };
