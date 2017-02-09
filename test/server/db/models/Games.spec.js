@@ -64,7 +64,7 @@ const clearDB = (done) => {
 
 let store = {};
 
-describe('Model: Decks', function() {
+describe('Model: Games', function() {
   before(function(done) {
     // clear all questions and users from the test DB.
     clearDB(done);

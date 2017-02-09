@@ -81,7 +81,7 @@ exports.up = function(knex, Promise) {
         .onUpdate('CASCADE');
       table.string('answer_provided');
       table.boolean('is_correct');
-      table.integer('point_value');
+      table.integer('points_awarded');
       table.dateTime('asked');
       table.integer('response_time_ms');
     }),

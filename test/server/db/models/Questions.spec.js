@@ -61,7 +61,7 @@ const generateFakeQuestions = (num) => {
                 .toString()
             }),
             answer: "B",
-            point_value: Math.ceiling(Math.random() * 5) * 100,
+            point_value: Math.ceil(Math.random() * 5) * 100,
           });
         });
         resolve(fakes);
