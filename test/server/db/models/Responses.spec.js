@@ -203,7 +203,7 @@ describe('Model: Responses', function() {
       expect(Promise.all(fakes.map((fake) => Responses.read.by_player(fake.player)))
           .then((recs) => recs.map((rec) => rec[0]))
           .then((recs) => recs.map((r) =>
-            _.pick(r,  ['game', 'question', 'player', 'answer_provided', 'is_correct', 'points_awarded', 'response_time_ms']))))
+            _.pick(r, ['game', 'question', 'player', 'answer_provided', 'is_correct', 'points_awarded', 'response_time_ms']))))
         .to.eventually.eql(fakes)
         .notify(done);
     });
