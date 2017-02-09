@@ -1,33 +1,30 @@
 'use strict';
 
 // not strictly needed but allows us to copy/paste this code to create other models.
-const TABLENAME = 'QUESTIONS';
+const TABLENAME = 'RESPONSES';
 
-import {addByMethods} from '../util';
-
+import { addByMethods } from '../util';
 
 export default (knex) => { // takes already configured/connected knex as dependency.
 
   // adds a record to the db.
   const create = ({
-      created_by, // references uid in USERS
-      is_public,
-      type,
-      category,
-      prompt,
-      choices,
-      answer,
+      game,
+      question,
+      player,
+      answer_provided,
+      is_correct,
       point_value,
+      response_time_ms,
     }) => knex(TABLENAME)
     .insert({
-      created_by,
-      is_public,
-      type,
-      category,
-      prompt,
-      choices,
-      answer,
+      game,
+      question,
+      player,
+      answer_provided,
+      is_correct,
       point_value,
+      response_time_ms,
     })
     .returning('id');
 
@@ -48,9 +45,9 @@ export default (knex) => { // takes already configured/connected knex as depende
     .where({ [by]: lookup })
     .del();
 
-  addByMethods(read, ['id', 'created_by', 'type']);
-  addByMethods(update, ['id']);
-  addByMethods(del, ['id', 'created_by']);
+  addByMethods(read, ['id', 'roomcode', 'deck', 'created_by']);
+  addByMethods(update, ['id', 'roomcode', 'deck', 'created_by']);
+  addByMethods(del, ['id', 'roomcode', 'deck', 'created_by']);
 
   const count = () => knex(TABLENAME).count('*');
 

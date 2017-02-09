@@ -25,6 +25,7 @@ exports.up = function(knex, Promise) {
       table.string('prompt');
       table.string('choices'); // likely JSON;
       table.string('answer');
+      table.integer('point_value');
       table.timestamps();
     }),
 
@@ -81,7 +82,6 @@ exports.up = function(knex, Promise) {
       table.string('answer_provided');
       table.boolean('is_correct');
       table.integer('point_value');
-      table.integer('max_point_value');
       table.dateTime('asked');
       table.integer('response_time_ms');
     }),

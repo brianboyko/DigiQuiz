@@ -31,6 +31,7 @@ const fakeQuestion = {
     D: 'Really Mad Max'
   }),
   answer: "A",
+  point_value: 100
 };
 
 import {generateFakeUsers} from './util';
@@ -60,6 +61,7 @@ const generateFakeQuestions = (num) => {
                 .toString()
             }),
             answer: "B",
+            point_value: Math.ceiling(Math.random() * 5) * 100,
           });
         });
         resolve(fakes);
@@ -126,7 +128,7 @@ describe('Model: Questions', function() {
     it('should be the record we just entered', function(done) {
       expect(Questions.read.by_created_by(store.uid)
           .then((r) => r[0])
-          .then((r) => _.pick(r, ["is_public", "type", "category", "prompt", "choices", 'answer'])))
+          .then((r) => _.pick(r, ["is_public", "type", "category", "prompt", "choices", 'answer', 'point_value'])))
         .to.eventually.eql(fakeQuestion)
         .notify(done);
     });
@@ -150,7 +152,7 @@ describe('Model: Questions', function() {
     });
     it('reads with a manually inserted by', function(done) {
       expect(Questions.read('prompt')(fakes[0].prompt)
-          .then((r) => _.pick(r[0], ['created_by', "is_public", "type", "category", "prompt", "choices", 'answer'])))
+          .then((r) => _.pick(r[0], ['created_by', "is_public", "type", "category", "prompt", "choices", 'answer', 'point_value'])))
         .to.eventually.eql(fakes[0])
         .notify(done);
     });
@@ -158,7 +160,7 @@ describe('Model: Questions', function() {
       expect(Promise.all(fakes.map((fake) => Questions.read.by_created_by(fake.created_by)))
           .then((recs) => recs.map((rec) => rec[0]))
           .then((recs) => recs.map((r) =>
-            _.pick(r, ['created_by', "is_public", "type", "category", "prompt", "choices", 'answer']))))
+            _.pick(r, ['created_by', "is_public", "type", "category", "prompt", "choices", 'answer', 'point_value']))))
         .to.eventually.eql(fakes)
         .notify(done);
     });
