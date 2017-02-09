@@ -14,7 +14,7 @@ export default (knex) => { // takes already configured/connected knex as depende
       player,
       answer_provided,
       is_correct,
-      point_value,
+      points_awarded,
       response_time_ms,
     }) => knex(TABLENAME)
     .insert({
@@ -23,7 +23,7 @@ export default (knex) => { // takes already configured/connected knex as depende
       player,
       answer_provided,
       is_correct,
-      point_value,
+      points_awarded,
       response_time_ms,
     })
     .returning('id');
@@ -45,9 +45,9 @@ export default (knex) => { // takes already configured/connected knex as depende
     .where({ [by]: lookup })
     .del();
 
-  addByMethods(read, ['id', 'roomcode', 'deck', 'created_by']);
-  addByMethods(update, ['id', 'roomcode', 'deck', 'created_by']);
-  addByMethods(del, ['id', 'roomcode', 'deck', 'created_by']);
+  addByMethods(read, ['id', 'game', 'question', 'player']);
+  addByMethods(update, ['id', 'game', 'question', 'player']);
+  addByMethods(del, ['id', 'game', 'question', 'player']);
 
   const count = () => knex(TABLENAME).count('*');
 
