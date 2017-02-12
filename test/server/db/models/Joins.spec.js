@@ -46,30 +46,43 @@ Our database:
 
 const hydrateDB = () => {
   let store = {};
-  store.users = {};
-  store.games = {};
-  store.decks = {};
-  store.questions = {};
 
-  const userCreate = (first_name) => {
-    let last_name = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
-    let login = firstName;
-    let password = Math.random().toString();
-    let email = firstName + "." + lastName + "@digiquiz.com";
-    store[first_name] = {
-      login,
-      password,
-      email,
-      first_name,
-      last_name
-    }
-    return store[first_name];
+  const addUsersToDb = (usersNames) => new Promise((resolve, reject) => {
+
+    Promise.all(usersNames.map((loginName) => {
+      store.users[loginName] = userCreate(loginName);
+      return Users.create(store.users[loginName])
+        .then((uid) => {
+          store.users[loginName].uid = uid[0];
+          return store.users[loginName];
+        })
+
+      }))
+      .then((usersAndIds) => resolve(usersAndIds))
+    })
+    /// use above, not below, need to go to dinner
+
+
+
+  return new Promise ((resolve, reject) => {
+    Promise.all(["Alice", "Bob", "Carol"].map((loginName) => {
+    store.users[loginName] = userCreate(loginName);
+    return Users.create(userCreate(loginName))
+      .then((uid) => {
+        store.users[loginName].uid = uid[0];
+        return store.users[loginName];
+      })
   }
-
-
-  return Promise.all(["Alice", "Bob", "Carol"].map((loginName) => Users.create(userCreate(loginName))))
+    return Users.create(userCreate(loginName)))
+  }
     .then((userIds) => userIds.map((id) => id[0]))
-    .then((uIds) => Promise.all(uIds.map((uid) => Users.read.by_uid(uid))))
+    .then((uIds) => {
+
+      return  Promise.all(uIds.map((uid) => Users.read.by_uid(uid)))
+
+    })
+
+
     .then((records) => Promise.all(records.map((record) => {
       if(record.login === "Alice"){
         return Decks.create({
@@ -77,14 +90,14 @@ const hydrateDB = () => {
           is_public: true,
           title: "quack",
           subject: "farm"
-        })
+        });
       } else if (record.login === "Bob"){
         return Decks.create({
           created_by: record.uid,
           is_public: true,
           title: "moo",
           subject: "farm"
-        })
+        });
       } else if (record.login === "Carol") {
           return Promise.all([Decks.create({
             created_by: record.uid,
@@ -99,8 +112,9 @@ const hydrateDB = () => {
             subject: "farm",
           })]);
       }
-    })))
-    // then do qestions next. 
+    })));
+    .then((deckIds) => Promise.all())
+    // then do qestions next.
 
 
 

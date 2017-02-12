@@ -17,7 +17,6 @@
   "rules": {
     "semi"                 : [1, "always"],
     "key-spacing"          : 0,
-    "max-len"              : [2, 120, 2],
     "comma-dangle"         : [1, "only-multiline"],
     "space-before-function-paren": 0,
     "jsx-quotes"           : 0,
