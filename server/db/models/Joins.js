@@ -4,7 +4,7 @@
 import { addByMethods } from '../util';
 
 
-export const joinModel = (knex, tablename, firstRef, secondRef) => {
+export const Joins = (knex, tablename, firstRef, secondRef) => {
 
   // adds a record to the db.
   const create = (creationObject) => knex(tablename)
@@ -46,7 +46,8 @@ export const joinModel = (knex, tablename, firstRef, secondRef) => {
   };
 };
 
-export const Questions_Keywords = (knex) => joinModel(knex, "QUESTIONS_KEYWORDS", "question", 'keyword');
-export const Users_Decks = (knex) => joinModel(knex, "USERS_DECKS", "user", "deck");
-export const Decks_Questions = (knex) => joinModel(knex, "DECKS_QUESTIONS", "deck", "question");
-export const Games_Players = (knex) => joinModel(knex, "GAMES_PLAYERS", "player", "game");
+export const Questions_Keywords = (knex) => Joins(knex, "QUESTIONS_KEYWORDS", "question", 'keyword');
+export const Users_Decks = (knex) => Joins(knex, "USERS_DECKS", "user", "deck");
+export const Decks_Questions = (knex) => Joins(knex, "DECKS_QUESTIONS", "deck", "question");
+export const Games_Players = (knex) => Joins(knex, "GAMES_PLAYERS", "player", "game");
+export default Joins; 

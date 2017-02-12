@@ -1,21 +1,112 @@
-// 'use strict';
-// import _ from 'lodash';
-// import chai from 'chai';
-// import chaiAP from 'chai-as-promised';
-// chai.use(chaiAP);
-// const expect = chai.expect;
-//
-// import knex from '../../../../server/db/config';
-// import modelKeywords from '../../../../server/db/models/Keywords';
-// const Keywords = modelKeywords(knex);
-//
-// const clearDB = (done) => {
-//   Keywords.read.all()
-//     .then((records) => records.map((r) => r.id))
-//     .then((ids) => Promise.all(ids.map((id) => Keywords.del.by_id(id))))
-//     .then(() => done());
-// };
-//
+'use strict';
+import _ from 'lodash';
+import chai from 'chai';
+import chaiAP from 'chai-as-promised';
+chai.use(chaiAP);
+const expect = chai.expect;
+
+import knex from '../../../../server/db/config';
+
+import modelDecks from '../../../../sever/db/models/Decks';
+import modelQuestions from '../../../../sever/db/models/Questions';
+import modelKeywords from '../../../../sever/db/models/Keywords';
+import modelGames from '../../../../sever/db/models/Games';
+import modelUsers from '../../../../sever/db/models/Users';
+
+const Decks = modelDecks(knex);
+const Questions = modelQuestions(knex);
+const Keywords = modelKeywords(knex);
+const Games = modelGames(knex);
+const Users = modelUsers(knex);
+
+import modelJoins from '../../../../sever/db/models/Joins';
+
+const QuestionsKeywords = modelJoins(knex, "QUESTIONS_KEYWORDS", "question", "keyword");
+const UsersDecks = modelJoins(knex, "USERS_DECKS", "user", "deck");
+const DecksQuestions = modelJoins(knex, "DECKS_QUESTIONS", "deck", "question");
+const GamesPlayers = modelJoins(knex, "GAMES_PLAYERS", "player", "game");
+
+
+
+const LAST_NAMES = ["Hartnell", "Troughton", "Pertwee", "Baker", "Davidson", "McCoy", "McGann", "Hurt", "Ecclestone", "Tennant", "Smith", "Capaldi"];
+const FIRST_NAMES = ["William", "Patrick", "Jon", "Tom", "Peter", "Colin", "Sylvester", "Paul", "John", "Christopher", "David", "Matt", "Peter"];
+
+
+
+/*
+Our database:
+  users: Alice, Bob, Carol.
+  Alice creates a deck "quack" with question "what is duck" an starts a game "duckgame"
+     He invites Bob but not carla.
+  Bob creates a deck "moo" with questions "what is cow" and "what is bull" and stats a game "cowgame"
+    and invites Alice and Carol.
+  Carol creates a deck "neigh" with question "what is horse" and invites Alice to "horsegame".
+  Calla creates a deck "baa" with question "what is sheep"and invites Bob. to "sheepgame"
+*/
+
+const hydrateDB = () => {
+  let store = {};
+  store.users = {};
+  store.games = {};
+  store.decks = {};
+  store.questions = {};
+
+  const userCreate = (first_name) => {
+    let last_name = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
+    let login = firstName;
+    let password = Math.random().toString();
+    let email = firstName + "." + lastName + "@digiquiz.com";
+    store[first_name] = {
+      login,
+      password,
+      email,
+      first_name,
+      last_name
+    }
+    return store[first_name];
+  }
+
+
+  return Promise.all(["Alice", "Bob", "Carol"].map((loginName) => Users.create(userCreate(loginName))))
+    .then((userIds) => userIds.map((id) => id[0]))
+    .then((uIds) => Promise.all(uIds.map((uid) => Users.read.by_uid(uid))))
+    .then((records) => Promise.all(records.map((record) => {
+      if(record.login === "Alice"){
+        return Decks.create({
+          created_by: record.uid,
+          is_public: true,
+          title: "quack",
+          subject: "farm"
+        })
+      } else if (record.login === "Bob"){
+        return Decks.create({
+          created_by: record.uid,
+          is_public: true,
+          title: "moo",
+          subject: "farm"
+        })
+      } else if (record.login === "Carol") {
+          return Promise.all([Decks.create({
+            created_by: record.uid,
+            is_public: true,
+            title: "neigh",
+            subject: "farm",
+          }),
+          Decks.create({
+            created_by: record.uid,
+            is_public: true,
+            title: "baa",
+            subject: "farm",
+          })]);
+      }
+    })))
+    // then do qestions next. 
+
+
+
+
+
+}
 // describe('Model: Keywords', function() {
 //   before(function(done) {
 //     // clear all items from the test DB.
