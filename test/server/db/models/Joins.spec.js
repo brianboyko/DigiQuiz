@@ -7,11 +7,11 @@ const expect = chai.expect;
 
 import knex from '../../../../server/db/config';
 
-import modelDecks from '../../../../sever/db/models/Decks';
-import modelQuestions from '../../../../sever/db/models/Questions';
-import modelKeywords from '../../../../sever/db/models/Keywords';
-import modelGames from '../../../../sever/db/models/Games';
-import modelUsers from '../../../../sever/db/models/Users';
+import modelDecks from '../../../../server/db/models/Decks';
+import modelQuestions from '../../../../server/db/models/Questions';
+import modelKeywords from '../../../../server/db/models/Keywords';
+import modelGames from '../../../../server/db/models/Games';
+import modelUsers from '../../../../server/db/models/Users';
 
 const Decks = modelDecks(knex);
 const Questions = modelQuestions(knex);
@@ -19,7 +19,7 @@ const Keywords = modelKeywords(knex);
 const Games = modelGames(knex);
 const Users = modelUsers(knex);
 
-import modelJoins from '../../../../sever/db/models/Joins';
+import modelJoins from '../../../../server/db/models/Joins';
 
 const QuestionsKeywords = modelJoins(knex, "QUESTIONS_KEYWORDS", "question", "keyword");
 const UsersDecks = modelJoins(knex, "USERS_DECKS", "user", "deck");
@@ -31,7 +31,14 @@ const GamesPlayers = modelJoins(knex, "GAMES_PLAYERS", "player", "game");
 const LAST_NAMES = ["Hartnell", "Troughton", "Pertwee", "Baker", "Davidson", "McCoy", "McGann", "Hurt", "Ecclestone", "Tennant", "Smith", "Capaldi"];
 const FIRST_NAMES = ["William", "Patrick", "Jon", "Tom", "Peter", "Colin", "Sylvester", "Paul", "John", "Christopher", "David", "Matt", "Peter"];
 
-
+const userCreate = (login) => {
+  let obj = { login };
+  obj.password = Math.random().toString();
+  obj.first_name = login;
+  obj.last_name = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
+  obj.email = obj.first_name + "." + obj.last_name + "@gmail.com";
+  return obj;
+};
 
 /*
 Our database:
